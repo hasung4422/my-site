@@ -21,7 +21,6 @@ export default function HomePage() {
     } else { alert('로그인 정보를 확인해주세요.'); }
   }
 
-  // --- 1. 로그인 전 화면 ---
   if (!isLoggedIn) {
     return (
       <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', background:'#f0f2f5' }}>
@@ -35,7 +34,6 @@ export default function HomePage() {
     )
   }
 
-  // --- 2. 로그인 후 메인 대시보드 화면 ---
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: 'sans-serif', backgroundColor: '#f4f7f6' }}>
       
@@ -48,70 +46,17 @@ export default function HomePage() {
         <div style={{ flex: 1 }}>
           <p style={{ fontSize: '0.8rem', color: '#ffffff99', marginBottom: '15px' }}>MAIN MENU</p>
           
-          {/* 작업일보 바로가기 버튼 (남색 배경에 흰색 글씨) */}
           <Link href="/write" style={{ textDecoration: 'none' }}>
             <button style={{ 
-              width: '100%', 
-              padding: '15px', 
-              textAlign: 'left', 
-              backgroundColor: '#003d82', // 버튼은 사이드바보다 살짝 밝은 남색
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '8px', 
-              cursor: 'pointer', 
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              transition: '0.3s'
+              width: '100%', padding: '15px', textAlign: 'left', backgroundColor: '#003d82', 
+              color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer',
+              fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px'
             }}>
               📝 작업일보 작성하기
             </button>
           </Link>
 
-          {/* 추가 메뉴 예시 (나중에 늘려가시면 됩니다) */}
-          <button style={{ width: '100%', padding: '15px', textAlign: 'left', backgroundColor: 'transparent', color: '#ffffff99', border: 'none', marginTop: '10px', cursor: 'not-allowed' }}>
-            📊 현장 현황 (준비중)
-          </button>
-          <button style={{ width: '100%', padding: '15px', textAlign: 'left', backgroundColor: 'transparent', color: '#ffffff99', border: 'none', cursor: 'not-allowed' }}>
-            📸 사진 관리 (준비중)
-          </button>
-        </div>
-
-        {/* 하단 관리자 정보 */}
-        <div style={{ borderTop: '1px solid #ffffff33', paddingTop: '20px', fontSize: '0.9rem' }}>
-          <b>{adminName}</b> 님 로그인 중
-          <br />
-          <button onClick={() => setIsLoggedIn(false)} style={{ background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', marginTop: '10px', padding: 0 }}>로그아웃</button>
-        </div>
-      </div>
-
-      {/* [우측 메인 컨텐츠 영역] */}
-      <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
-        <header style={{ marginBottom: '30px' }}>
-          <h1 style={{ color: '#333', fontSize: '1.8rem' }}>대시보드</h1>
-          <p style={{ color: '#666' }}>오늘의 현장 소식을 관리하세요.</p>
-        </header>
-
-        {/* 요약 카드 영역 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
-          <div style={{ background: 'white', padding: '25px', borderRadius: '15px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-            <h3 style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>오늘 등록된 일보</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#002b5b', margin: '10px 0 0 0' }}>0건</p>
-          </div>
-          <div style={{ background: 'white', padding: '25px', borderRadius: '15px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-            <h3 style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>미승인 문서</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ffc107', margin: '10px 0 0 0' }}>0건</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  )
-}
-{/* ... 기존 메뉴들 (작업일보 작성하기 등) ... */}
-          
-          {/* 1. 여기에 이 코드를 복사해서 붙여넣으세요! */}
+          {/* 여기에 시스템 설정 버튼이 들어와야 함! */}
           <Link href="/settings" style={{ textDecoration: 'none' }}>
             <button style={{ 
               width: '100%', padding: '15px', textAlign: 'left', backgroundColor: 'transparent', 
@@ -122,8 +67,34 @@ export default function HomePage() {
             </button>
           </Link>
 
-        </div> {/* 메뉴 끝나는 곳 */}
+          <button style={{ width: '100%', padding: '15px', textAlign: 'left', backgroundColor: 'transparent', color: '#ffffff99', border: 'none', marginTop: '10px', cursor: 'not-allowed' }}>
+            📊 현장 현황 (준비중)
+          </button>
+        </div>
 
         {/* 하단 관리자 정보 및 로그아웃 */}
         <div style={{ borderTop: '1px solid #ffffff33', paddingTop: '20px', fontSize: '0.9rem' }}>
-          <b>{adminName}</b> 님 로그인 중...
+          <b>{adminName}</b> 님 로그인 중
+          <br />
+          <button onClick={() => setIsLoggedIn(false)} style={{ background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', marginTop: '10px', padding: 0 }}>로그아웃</button>
+        </div>
+      </div>
+
+      {/* [우측 컨텐츠 영역] */}
+      <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+        <header style={{ marginBottom: '30px' }}>
+          <h1 style={{ color: '#333', fontSize: '1.8rem' }}>대시보드</h1>
+          <p style={{ color: '#666' }}>오늘의 현장 소식을 관리하세요.</p>
+        </header>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+          <div style={{ background: 'white', padding: '25px', borderRadius: '15px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+            <h3 style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>오늘 등록된 일보</h3>
+            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#002b5b', margin: '10px 0 0 0' }}>0건</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  )
+}
