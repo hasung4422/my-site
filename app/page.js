@@ -109,3 +109,21 @@ export default function HomePage() {
     </div>
   )
 }
+{/* ... 기존 메뉴들 (작업일보 작성하기 등) ... */}
+          
+          {/* 1. 여기에 이 코드를 복사해서 붙여넣으세요! */}
+          <Link href="/settings" style={{ textDecoration: 'none' }}>
+            <button style={{ 
+              width: '100%', padding: '15px', textAlign: 'left', backgroundColor: 'transparent', 
+              color: '#ffffffcc', border: 'none', borderRadius: '8px', cursor: 'pointer',
+              marginTop: '10px', display: 'flex', alignItems: 'center', gap: '10px'
+            }}>
+              ⚙️ 시스템 설정
+            </button>
+          </Link>
+
+        </div> {/* 메뉴 끝나는 곳 */}
+
+        {/* 하단 관리자 정보 및 로그아웃 */}
+        <div style={{ borderTop: '1px solid #ffffff33', paddingTop: '20px', fontSize: '0.9rem' }}>
+          <b>{adminName}</b> 님 로그인 중...
