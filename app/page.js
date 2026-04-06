@@ -13,8 +13,6 @@ export default function HomePage() {
   const [adminName, setAdminName] = useState('')
   const [loginId, setLoginId] = useState('')
   const [loginPw, setLoginPw] = useState('')
-  
-  // 마우스가 올라간 버튼을 기억하기 위한 상태
   const [hoveredBtn, setHoveredBtn] = useState(null)
 
   useEffect(() => {
@@ -25,28 +23,47 @@ export default function HomePage() {
     }
   }, [])
 
+  // [수정] 로그인 함수 보완
   const handleLogin = async () => {
-    const { data } = await supabase.from('admin_users').select('*').eq('user_id', loginId).eq('password', loginPw).single()
-    if (data) {
-      setIsLoggedIn(true)
-      setAdminName(data.user_name)
-      localStorage.setItem('adminName', data.user_name)
-    } else { 
-      alert('로그인 정보를 확인해주세요.')
+    if (!loginId || !loginPw) return alert('아이디와 비밀번호를 입력해주세요.')
+
+    try {
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', loginId.trim()) // 공백 제거
+        .eq('password', loginPw.trim())
+        .single()
+
+      if (error) {
+        console.error("로그인 시도 중 에러:", error.message)
+        alert('로그인 정보를 확인해주세요. (ID/PW 불일치)')
+        return
+      }
+
+      if (data) {
+        setIsLoggedIn(true)
+        setAdminName(data.user_name)
+        localStorage.setItem('adminName', data.user_name)
+      }
+    } catch (e) {
+      alert('시스템 오류: ' + e.message)
     }
   }
 
   const handleLogout = () => {
-    setIsLoggedIn(false)
-    localStorage.removeItem('adminName')
+    if (confirm('로그아웃 하시겠습니까?')) {
+      setIsLoggedIn(false)
+      localStorage.removeItem('adminName')
+      setLoginId('')
+      setLoginPw('')
+    }
   }
 
-  // 공통 버튼 스타일 함수 (마우스 오버 시 색상 변경)
   const getBtnStyle = (btnName, isPrimary = false) => ({
     width: '100%',
     padding: '15px',
     textAlign: 'left',
-    // 기본 파란색이거나, 마우스가 올라갔을 때 밝은 파란색으로 변함
     backgroundColor: hoveredBtn === btnName ? '#004a99' : (isPrimary ? '#003d82' : 'transparent'),
     color: 'white',
     border: 'none',
@@ -56,23 +73,45 @@ export default function HomePage() {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
-    transition: '0.2s ease', // 부드럽게 불이 켜지도록 설정
+    transition: '0.2s ease',
     marginTop: isPrimary ? '0' : '10px'
   })
 
+  // --- 로그인 전 화면 ---
   if (!isLoggedIn) {
     return (
       <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', background:'#f0f2f5' }}>
         <div style={{ background:'white', padding:'40px', borderRadius:'15px', boxShadow:'0 4px 20px rgba(0,0,0,0.1)', width:'350px' }}>
           <h2 style={{ textAlign:'center', color:'#002b5b', marginBottom:'30px', fontWeight:'bold' }}>정현이앤씨 시스템</h2>
-          <input placeholder="아이디" value={loginId} onChange={e=>setLoginId(e.target.value)} style={{ width:'100%', padding:'12px', marginBottom:'10px', borderRadius:'8px', border:'1px solid #ddd' }} />
-          <input type="password" placeholder="비밀번호" value={loginPw} onChange={e=>setLoginPw(e.target.value)} style={{ width:'100%', padding:'12px', marginBottom:'25px', borderRadius:'8px', border:'1px solid #ddd' }} />
-          <button onClick={handleLogin} style={{ width:'100%', padding:'12px', backgroundColor:'#002b5b', color:'white', border:'none', borderRadius:'8px', cursor:'pointer', fontWeight:'bold' }}>로그인</button>
+          
+          <input 
+            placeholder="아이디" 
+            value={loginId} 
+            onChange={e=>setLoginId(e.target.value)} 
+            style={{ width:'100%', padding:'12px', marginBottom:'10px', borderRadius:'8px', border:'1px solid #ddd' }} 
+          />
+          
+          <input 
+            type="password" 
+            placeholder="비밀번호" 
+            value={loginPw} 
+            onChange={e=>setLoginPw(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleLogin()} // 엔터키로 로그인 가능하게
+            style={{ width:'100%', padding:'12px', marginBottom:'25px', borderRadius:'8px', border:'1px solid #ddd' }} 
+          />
+          
+          <button 
+            onClick={handleLogin} 
+            style={{ width:'100%', padding:'12px', backgroundColor:'#002b5b', color:'white', border:'none', borderRadius:'8px', cursor:'pointer', fontWeight:'bold' }}
+          >
+            로그인
+          </button>
         </div>
       </div>
     )
   }
 
+  // --- 로그인 후 대시보드 ---
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: 'sans-serif', backgroundColor: '#f4f7f6' }}>
       <div style={{ width: '260px', backgroundColor: '#002b5b', color: 'white', display: 'flex', flexDirection: 'column', padding: '20px' }}>
@@ -80,34 +119,13 @@ export default function HomePage() {
         
         <div style={{ flex: 1 }}>
           <p style={{ fontSize: '0.8rem', color: '#ffffff99', marginBottom: '15px' }}>MAIN MENU</p>
-          
           <Link href="/write" style={{ textDecoration: 'none' }}>
-            <button 
-              onMouseEnter={() => setHoveredBtn('write')}
-              onMouseLeave={() => setHoveredBtn(null)}
-              style={getBtnStyle('write', true)}
-            >
-              📝 작업일보 작성하기
-            </button>
+            <button onMouseEnter={() => setHoveredBtn('write')} onMouseLeave={() => setHoveredBtn(null)} style={getBtnStyle('write', true)}>📝 작업일보 작성하기</button>
           </Link>
-
           <Link href="/settings" style={{ textDecoration: 'none' }}>
-            <button 
-              onMouseEnter={() => setHoveredBtn('settings')}
-              onMouseLeave={() => setHoveredBtn(null)}
-              style={getBtnStyle('settings')}
-            >
-              ⚙️ 시스템 설정
-            </button>
+            <button onMouseEnter={() => setHoveredBtn('settings')} onMouseLeave={() => setHoveredBtn(null)} style={getBtnStyle('settings')}>⚙️ 시스템 설정</button>
           </Link>
-
-          <button 
-            onMouseEnter={() => setHoveredBtn('status')}
-            onMouseLeave={() => setHoveredBtn(null)}
-            style={getBtnStyle('status')}
-          >
-            📊 현장 현황 (준비중)
-          </button>
+          <button onMouseEnter={() => setHoveredBtn('status')} onMouseLeave={() => setHoveredBtn(null)} style={getBtnStyle('status')}>📊 현장 현황 (준비중)</button>
         </div>
 
         <div style={{ borderTop: '1px solid #ffffff33', paddingTop: '20px', fontSize: '0.9rem' }}>
