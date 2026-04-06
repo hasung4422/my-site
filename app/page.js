@@ -50,18 +50,19 @@ export default function HomePage() {
       <div style={{ width: '260px', backgroundColor: '#002b5b', color: 'white', padding: '20px' }}>
         <h3>정현이앤씨</h3>
         <div style={{ marginTop: '40px' }}>
+          {/* [중요] 주소와 폴더명이 일치해야 404가 안 뜹니다 */}
           {user.role === 'admin' ? (
             <>
-              <Link href="/settings" style={{textDecoration:'none'}}>
-                <button onMouseEnter={()=>setHoveredBtn('s')} onMouseLeave={()=>setHoveredBtn(null)} style={getBtnStyle('s')}>⚙️ 시스템 설정</button>
+              <Link href="/settings">
+                <div onMouseEnter={()=>setHoveredBtn('s')} onMouseLeave={()=>setHoveredBtn(null)} style={getBtnStyle('s')}>⚙️ 시스템 설정</div>
               </Link>
-              <Link href="/view" style={{textDecoration:'none'}}>
-                <button onMouseEnter={()=>setHoveredBtn('v')} onMouseLeave={()=>setHoveredBtn(null)} style={getBtnStyle('v')}>📊 현황 보기</button>
+              <Link href="/write">
+                <div onMouseEnter={()=>setHoveredBtn('w')} onMouseLeave={()=>setHoveredBtn(null)} style={getBtnStyle('w')}>📝 작업일보 작성</div>
               </Link>
             </>
           ) : (
-            <Link href="/write" style={{textDecoration:'none'}}>
-              <button onMouseEnter={()=>setHoveredBtn('w')} onMouseLeave={()=>setHoveredBtn(null)} style={getBtnStyle('w')}>📝 일보 작성</button>
+            <Link href="/write">
+              <div onMouseEnter={()=>setHoveredBtn('w')} onMouseLeave={()=>setHoveredBtn(null)} style={getBtnStyle('w')}>📝 작업일보 작성</div>
             </Link>
           )}
         </div>
