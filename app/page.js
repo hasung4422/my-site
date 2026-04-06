@@ -1,104 +1,51 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import Link from 'next/link' // 페이지 이동을 위한 도구
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 )
 
-export default function DailyReportPage() {
-  const [view, setView] = useState('list') // 'list' 또는 'write' 화면 전환용
-  const [reportDate, setReportDate] = useState('')
-  const [company, setCompany] = useState('')
-  const [site, setSite] = useState('')
-  const [reports, setReports] = useState([])
+export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [adminName, setAdminName] = useState('')
+  const [loginId, setLoginId] = useState('')
+  const [loginPw, setLoginPw] = useState('')
 
-  // 데이터 불러오기
-  const loadReports = async () => {
-    const { data } = await supabase.from('daily_reports').select('*').order('report_date', { ascending: false })
-    if (data) setReports(data)
+  const handleLogin = async () => {
+    const { data } = await supabase.from('admin_users').select('*').eq('user_id', loginId).eq('password', loginPw).single()
+    if (data) {
+      setIsLoggedIn(true); setAdminName(data.user_name);
+    } else { alert('로그인 실패!'); }
   }
 
-  useEffect(() => { loadReports() }, [])
-
-  // 저장 함수
-  const saveReport = async () => {
-    if (!reportDate || !company || !site) return alert('모든 항목을 채워주세요!')
-    
-    const { error } = await supabase.from('daily_reports').insert([
-      { report_date: reportDate, company_name: company, site_name: site }
-    ])
-
-    if (!error) {
-      alert('작업일보가 저장되었습니다!')
-      setReportDate(''); setCompany(''); setSite('');
-      setView('list'); // 저장 후 목록으로 돌아가기
-      loadReports();
-    } else {
-      alert('저장 실패: ' + error.message)
-    }
+  if (!isLoggedIn) {
+    return (
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh', background:'#f0f2f5' }}>
+        <div style={{ background:'white', padding:'40px', borderRadius:'15px', boxShadow:'0 4px 20px rgba(0,0,0,0.1)', width:'350px' }}>
+          <h2 style={{ textAlign:'center', color:'#007bff', marginBottom:'30px' }}>정현 현장 관리</h2>
+          <input placeholder="아이디" value={loginId} onChange={e=>setLoginId(e.target.value)} style={{ width:'100%', padding:'12px', marginBottom:'10px', borderRadius:'8px', border:'1px solid #ddd' }} />
+          <input type="password" placeholder="비밀번호" value={loginPw} onChange={e=>setLoginPw(e.target.value)} style={{ width:'100%', padding:'12px', marginBottom:'25px', borderRadius:'8px', border:'1px solid #ddd' }} />
+          <button onClick={handleLogin} style={{ width:'100%', padding:'12px', backgroundColor:'#007bff', color:'white', border:'none', borderRadius:'8px', cursor:'pointer', fontWeight:'bold' }}>로그인</button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-      <h1 style={{ textAlign: 'center', color: '#333' }}>🏗️ 정현 현장 관리 시스템</h1>
-
-      {view === 'list' ? (
-        /* --- 목록 화면 --- */
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <h2>작업일보 목록</h2>
-            <button 
-              onClick={() => setView('write')} 
-              style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-            >
-              📝 작업일보 작성하러 가기
-            </button>
-          </div>
-
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #333' }}>
-                <th style={{ padding: '10px' }}>날짜</th>
-                <th style={{ padding: '10px' }}>회사명</th>
-                <th style={{ padding: '10px' }}>현장명</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map(r => (
-                <tr key={r.id} style={{ borderBottom: '1px solid #eee', textAlign: 'center' }}>
-                  <td style={{ padding: '10px' }}>{r.report_date}</td>
-                  <td style={{ padding: '10px' }}>{r.company_name}</td>
-                  <td style={{ padding: '10px' }}>{r.site_name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        /* --- 작성 화면 --- */
-        <div style={{ background: '#f9f9f9', padding: '30px', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-          <h2>새 작업일보 작성</h2>
-          <div style={{ marginBottom: '15px' }}>
-            <label>날짜: </label>
-            <input type="date" value={reportDate} onChange={e => setReportDate(e.target.value)} style={{ width: '100%', padding: '10px', marginTop: '5px' }} />
-          </div>
-          <div style={{ marginBottom: '15px' }}>
-            <label>회사명: </label>
-            <input type="text" placeholder="회사명을 입력하세요" value={company} onChange={e => setCompany(e.target.value)} style={{ width: '100%', padding: '10px', marginTop: '5px' }} />
-          </div>
-          <div style={{ marginBottom: '20px' }}>
-            <label>현장명: </label>
-            <input type="text" placeholder="현장명을 입력하세요" value={site} onChange={e => setSite(e.target.value)} style={{ width: '100%', padding: '10px', marginTop: '5px' }} />
-          </div>
-          
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={saveReport} style={{ flex: 2, padding: '15px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer' }}>저장하기</button>
-            <button onClick={() => setView('list')} style={{ flex: 1, padding: '15px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>취소</button>
-          </div>
-        </div>
-      )}
+    <div style={{ padding: '50px', textAlign: 'center', fontFamily: 'sans-serif' }}>
+      <h1>🏗️ 정현 현장 관리 메인</h1>
+      <p>반갑습니다, <b>{adminName}</b>님!</p>
+      <div style={{ marginTop: '30px' }}>
+        {/* 작업일보 전용 페이지로 이동하는 버튼 */}
+        <Link href="/write">
+          <button style={{ padding: '20px 40px', fontSize: '1.2rem', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>
+            📝 작업일보 작성/목록 보러가기
+          </button>
+        </Link>
+      </div>
     </div>
   )
 }
